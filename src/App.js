@@ -3,7 +3,7 @@ import './App.css';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Carlist from './components/GeoNamesList';
+import GeoNamesList from './components/GeoNamesList';
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Carlist />
+      <GeoNamesList />
     </div>
   );
 }
