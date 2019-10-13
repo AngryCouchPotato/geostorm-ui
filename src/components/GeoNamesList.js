@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 
 import ReactTable from "react-table";
 import 'react-table/react-table.css';
@@ -7,12 +7,26 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import DialogContent from '@material-ui/core/DialogContent';
 import {SERVER_URL} from '../Constants.js'
+import MapContainer from '../components/MapContainer'
+
+function updateState(text){
+    this.setState({text})
+}
 
 class GeoNamesList extends Component {
 
     constructor(props) {
         super(props);
         this.state = { name: '', geoNames: []};
+    }
+
+    updateChild(geonames) {
+        // geonames.map((geoname) => {
+        //     return {{
+        //      lat: geoname.ltd,
+        //      lng: geoname.longlngitude
+        //    }}
+        // updateState(text)
     }
 
     render() {
@@ -40,13 +54,6 @@ class GeoNamesList extends Component {
                 accessor: 'lat',
                 filterable: false,
                 sortable: false,
-            }, {
-                id: 'button',
-                sortable: false,
-                filterable: false,
-                width: 100,
-                accessor: 'name',
-                Cell: ({value}) => (<button onClick={() => {this.btnClick(value)}}>Open Map</button>)
             }
         ]
         return (
@@ -60,16 +67,13 @@ class GeoNamesList extends Component {
                         onClick={this.search} value={this.state.name} >search
                     </Button>
                 </DialogContent>
-              <ReactTable 
-                data={this.state.geoNames} 
-                columns={columns} 
-                filterable={true}/>
+                <ReactTable 
+                    data={this.state.geoNames} 
+                    columns={columns} 
+                    filterable={true}/>
+                <MapContainer/>
             </div>
           );
-    }
-
-    btnClick =(value) => {
-        // print(value);
     }
 
     search = () => {
@@ -80,6 +84,7 @@ class GeoNamesList extends Component {
             this.setState({
                 geoNames: responseData
             }); 
+            this.updateChild(responseData);
         })
         .catch(err => console.error(err)); 
     }
@@ -89,6 +94,7 @@ class GeoNamesList extends Component {
             name: e.target.value
         });
     } 
+
 }
 
 export default GeoNamesList;
