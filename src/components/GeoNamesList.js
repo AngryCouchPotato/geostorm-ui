@@ -8,26 +8,41 @@ import TextField from '@material-ui/core/TextField';
 import DialogContent from '@material-ui/core/DialogContent';
 import {SERVER_URL} from '../Constants.js'
 import MapContainer from '../components/MapContainer'
-
-function updateState(text){
-    this.setState({text})
-}
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 class GeoNamesList extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { name: '', geoNames: []};
+        this.state = { name: '', geoNames: [], markers: []};
+        this.setMarkers = this.setMarkers.bind(this)
     }
 
-    updateChild(geonames) {
-        // geonames.map((geoname) => {
-        //     return {{
-        //      lat: geoname.ltd,
-        //      lng: geoname.longlngitude
-        //    }}
-        // updateState(text)
+    setMarkers(markers) {
+        this.setState(state => ({
+            markers: markers
+        }));
     }
+
+    search = () => {
+        const url = SERVER_URL + `api/geonames?name=${this.state.name}`;
+        fetch(url)
+        .then(response => response.json()) 
+        .then(responseData => {
+            this.setState({
+                geoNames: responseData
+            }); 
+            this.setMarkers();
+        })
+        .catch(err => console.error(err)); 
+    }
+    
+    setName = (e) => {
+        this.setState({
+            name: e.target.value
+        });
+    } 
 
     render() {
         const columns = [
@@ -44,13 +59,13 @@ class GeoNamesList extends Component {
             },{
                 Header: 'fcodeName',
                 accessor: 'fcodeName',
-            }, {
-                Header: 'lng',
+            },{
+                Header: 'longitude',
                 accessor: 'lng',
                 filterable: false,
                 sortable: false,
-            }, {
-                Header: 'lat',
+            },{
+                Header: 'latitude',
                 accessor: 'lat',
                 filterable: false,
                 sortable: false,
@@ -67,33 +82,25 @@ class GeoNamesList extends Component {
                         onClick={this.search} value={this.state.name} >search
                     </Button>
                 </DialogContent>
-                <ReactTable 
-                    data={this.state.geoNames} 
-                    columns={columns} 
-                    filterable={true}/>
-                <MapContainer/>
+               
+                <Tabs defaultIndex={0} ref="tabs">
+                    <TabList>
+                        <Tab>Data</Tab>
+                        <Tab>Map</Tab>
+                    </TabList>
+                    <TabPanel ref="tabPanel1">
+                        <ReactTable 
+                            data={this.state.geoNames} 
+                            columns={columns} 
+                            filterable={true}/>  
+                    </TabPanel>
+                    <TabPanel ref="tabPanel2">
+                        <MapContainer ref = "mapContainer1" markers = {this.state.markers}/>
+                    </TabPanel>
+                </Tabs>
             </div>
           );
     }
-
-    search = () => {
-        const url = SERVER_URL + `api/geonames?name=${this.state.name}`;
-        fetch(url)
-        .then(response => response.json()) 
-        .then(responseData => {
-            this.setState({
-                geoNames: responseData
-            }); 
-            this.updateChild(responseData);
-        })
-        .catch(err => console.error(err)); 
-    }
-    
-    setName = (e) => {
-        this.setState({
-            name: e.target.value
-        });
-    } 
 
 }
 
